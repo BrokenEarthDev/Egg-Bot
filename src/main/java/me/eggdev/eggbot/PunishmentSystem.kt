@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.requests.RestAction
 import java.awt.Color
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 val GUILD_MUTED_ROLES: HashMap<Guild, Long> = HashMap()
 
@@ -81,7 +82,13 @@ fun mute(user: User, punisher: User, reason: String, issued: Guild, end: Date) :
         // create
         createMutedRole(issued).queue {r -> run {
                 GUILD_MUTED_ROLES[issued] = r.idLong
-                issued.retrieveMember(user).queue { mem -> issued.addRoleToMember(mem, r).queue() }
+                issued.retrieveMember(user).queue { mem ->
+                    run {
+                        issued.addRoleToMember(mem, r).queue {role ->
+                            executorService.schedule({ unmute(mem)}, end.time - System.currentTimeMillis(), TimeUnit.MILLISECONDS)
+                        }
+                    }
+                }
             }
         }
     } else issued.retrieveMember(user).queue {mem -> issued.addRoleToMember(mem, retrieved).queue()}
@@ -113,7 +120,7 @@ fun unmute(member: Member) {
     if (muteRole != null) {
         val role = member.guild.getRoleById(muteRole)
         if (role != null)
-            member.guild.removeRoleFromMember(member, role)
+            member.guild.removeRoleFromMember(member, role).queue()
         // todo add prior roles
     }
 }

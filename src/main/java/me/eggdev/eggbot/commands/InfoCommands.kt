@@ -1,14 +1,19 @@
 package me.eggdev.eggbot.commands
 
 import me.eggdev.eggbot.*
+import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.MessageEmbed
+import java.awt.Color
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.math.min
 
 @CommandName("leaderboard")
 @CommandHelp(help = "Displays both the level leaderboard and the egg leaderboard with a maximum of `10` entries",
             usage = "`e!leaderboard`")
+@SetCategory(CommandCategory.ENTERTAINMENT)
 class LeaderboardCommand : EggCommand() {
 
     /**
@@ -69,6 +74,7 @@ class LeaderboardCommand : EggCommand() {
 @CommandHelp(help = "Measures the ping between the user's computer to the bot's computer. This doesn't measure " +
             "the ping between the user's computer to the server's computer. Additionally, this command also measures " +
             "the gateway ping.", usage = "`e!ping`")
+@SetCategory(CommandCategory.UTILITIES)
 class PingCommand : EggCommand() {
 
     /**
@@ -86,4 +92,151 @@ class PingCommand : EggCommand() {
         return true
     }
 
+}
+
+@CommandName("help")
+@CommandHelp(help = "Gives help about the bot's function and more information about commands",
+            usage = "`e!help` or `e!help argument`")
+@SetCategory(CommandCategory.UTILITIES)
+open class HelpCommand : EggCommand() {
+
+    /**
+     * Executes the command
+     *
+     * @param sender The member who executed the command
+     * @param message The command message
+     * @param args The arguments of the command, excluding the command itself
+     * @return Whether the execution is considered to be 'successful'
+     */
+    override fun executeCommand(sender: Member, message: Message, args: List<String>): Boolean {
+        if (args.isNotEmpty()) {
+            val combined = combineStrings(args, 0)
+            val command = getCommand(combined)
+            if (command != null) {
+                val permsString = ArrayList<String>()
+                command.getPermissions().forEach { perm -> permsString.add(perm.toString().toLowerCase().replace("_", " ")) }
+                val permissions = "• **Permissions:** " + (if (permsString.isEmpty()) "None required" else "\n" + createBulletedListOf(*permsString.toTypedArray()))
+                val arguments = "• **Number of arguments:** " +
+                        if (command.range.from == 0 && command.range.to == Int.MAX_VALUE)
+                            "Any"
+                        else if (command.range.from == 0 && command.range.to > 0)
+                            "Up to ${command.range.to}"
+                        else if (command.range.from == 0 && command.range.to == 0)
+                            "No argument is required"
+                        else if (command.range.from != 0 && command.range.to == Int.MAX_VALUE)
+                            "${command.range.from} and upwards"
+                        else "From ${command.range.from} to ${command.range.to}"
+
+                val builder = EmbedBuilder()
+                        .setTitle("Command information for ${command.name}")
+                        .setDescription("• **Help:** " + command.help)
+                        .appendDescription("\n")
+                        .appendDescription("• **Usage:** " + command.usage)
+                        .appendDescription("\n")
+                        .appendDescription(arguments)
+                        .appendDescription("\n")
+                        .appendDescription("• **Category:** " + command.category.name.toLowerCase())
+                        .appendDescription("\n")
+                        .appendDescription(permissions)
+                        .setColor(FRENCH_SKY_BLUE)
+
+                message.channel.sendMessage(builder.build()).queue()
+                return true
+            }
+        }
+        val embed = EmbedBuilder()
+                .setTitle("Help :question:")
+                .setColor(UFO_GREEN)
+                .addField("What is this bot for?", "This is a multi-purpose, elegant, and the perfect bot that " +
+                        "suits all your needs. From memes to muting someone to laying eggs, this bot will be your " +
+                        "favorite one. [Join our server](https://discord.gg/KykFgvwcDN)", false)
+                .addField(":video_game: Entertainment", "`e!entertainment`", true)
+                .addField(":police_officer: Moderation", "`e!moderation`", true)
+                .addField(":cd: Utilities", "`e!utilities`", true)
+                .addField("Invite our bot", "Invite links to be developed", true)
+                .addField("Suggest a feature", "[In our server](https://discord.gg/KykFgvwcDN)", true)
+                .addField("Like our bot?", "Please vote for our bot here", true)
+                .setFooter("Developed with ❤ by our developers")
+                .build()
+        message.channel.sendMessage(embed).queue()
+        return true
+    }
+
+    protected fun category(category: CommandCategory, description: String, color: Color) : MessageEmbed {
+        val commands = category.getCommands()
+        val builder = EmbedBuilder()
+        when (category) {
+            CommandCategory.ENTERTAINMENT -> builder.setTitle(":video_game: Entertainment Commands")
+            CommandCategory.MODERATION -> builder.setTitle(":police_officer: Moderation Commands")
+            else -> builder.setTitle(":cd: Utility Commands")
+        }
+
+        commands.forEach { cmds -> run {
+            builder.addField(cmds.name, "`e!help ${cmds.name}`", true)
+        }
+        }
+
+        builder.setDescription(description)
+        builder.setColor(color)
+        return builder.build()
+    }
+
+}
+
+@CommandName("entertainment")
+@CommandHelp(help = "Sends information about entertainment commands", usage = "`e!entertainment`")
+class EntertainmentHelpCommand : HelpCommand() {
+    /**
+     * Executes the command
+     *
+     * @param sender The member who executed the command
+     * @param message The command message
+     * @param args The arguments of the command, excluding the command itself
+     * @return Whether the execution is considered to be 'successful'
+     */
+    override fun executeCommand(sender: Member, message: Message, args: List<String>): Boolean {
+        val e = super.category(CommandCategory.ENTERTAINMENT, "The following are entertainment commands," +
+                " which can be used by users in this server", FLIRTATIOUS)
+        message.channel.sendMessage(e).queue()
+        return true
+    }
+
+}
+
+@CommandName("moderation")
+@CommandHelp(help = "Sends information about moderation commands", usage = "`e!moderation`")
+class ModerationHelpCommand : HelpCommand() {
+    /**
+     * Executes the command
+     *
+     * @param sender The member who executed the command
+     * @param message The command message
+     * @param args The arguments of the command, excluding the command itself
+     * @return Whether the execution is considered to be 'successful'
+     */
+    override fun executeCommand(sender: Member, message: Message, args: List<String>): Boolean {
+        val m = category(CommandCategory.MODERATION, "The following are moderation commands, which " +
+                "can be used by staff members", FLIRTATIOUS)
+        message.channel.sendMessage(m).queue()
+        return true
+    }
+}
+
+@CommandName("utilities")
+@CommandHelp(help = "Sends information about utility commands", usage = "`e!utilities`")
+class UtilitiesHelpCommand : HelpCommand() {
+    /**
+     * Executes the command
+     *
+     * @param sender The member who executed the command
+     * @param message The command message
+     * @param args The arguments of the command, excluding the command itself
+     * @return Whether the execution is considered to be 'successful'
+     */
+    override fun executeCommand(sender: Member, message: Message, args: List<String>): Boolean {
+        val u = category(CommandCategory.UTILITIES, "The following are utility commands, which " +
+                "can be very useful to any member", FLIRTATIOUS)
+        message.channel.sendMessage(u).queue()
+        return true
+    }
 }

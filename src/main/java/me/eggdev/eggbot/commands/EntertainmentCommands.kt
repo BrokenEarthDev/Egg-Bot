@@ -49,7 +49,8 @@ val chickenProbability = 0.05
  * Sends memes :)
  */
 @CommandName("meme")
-@CommandHelp(help = "Sends random memes fetched from reddit by using `meme`", usage = "`meme`")
+@CommandHelp(help = "Sends random memes fetched from reddit by using `e!meme`", usage = "`e!meme`")
+@SetCategory(CommandCategory.ENTERTAINMENT)
 class MemeCommand : EggCommand() {
     /**
      * Executes the command
@@ -87,7 +88,8 @@ class MemeCommand : EggCommand() {
 
 @CommandName("lay")
 @CommandHelp(help = "Lays eggs :). A certain amount of eggs will be gained. You can only execute this command " +
-        "thrice per day", usage = "`crack`")
+        "thrice per day", usage = "`e!lay`")
+@SetCategory(CommandCategory.ENTERTAINMENT)
 class LayCommand : EggCommand() {
 
     val execs = HashMap<User, ArrayList<Date>>()
@@ -134,6 +136,7 @@ class LayCommand : EggCommand() {
         "number in the first argument. Cracking an egg gives you a chance to give birth to a baby chicken. " +
         "This will allow you to produce more eggs", usage = "`e!crack` or `e!crack number`")
 @RequireArguments(max = 1)
+@SetCategory(CommandCategory.ENTERTAINMENT)
 class CrackCommand : EggCommand() {
 
     /**
@@ -202,6 +205,7 @@ class CrackCommand : EggCommand() {
 @CommandHelp(help = "Uses :magic: to answer your yes-no question",
             usage = "`e!8ball question`")
 @RequireArguments(min = 1)
+@SetCategory(CommandCategory.ENTERTAINMENT)
 class Magic8BallCommand : EggCommand() {
     /**
      * Executes the command

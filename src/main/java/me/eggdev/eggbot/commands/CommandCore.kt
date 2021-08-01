@@ -1,6 +1,7 @@
 package me.eggdev.eggbot.commands
 
 import me.eggdev.eggbot.*
+import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
@@ -9,6 +10,7 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
+import java.lang.Exception
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -17,7 +19,10 @@ import kotlin.collections.HashMap
  * The registered commands
  */
 val commands: List<EggCommand> = listOf(WarnCommand(), MuteCommand(), BanCommand(), PurgeCommand(), MemeCommand(),
-        LayCommand(), CrackCommand(), Magic8BallCommand(), CensorCommand(), LeaderboardCommand(), PingCommand())
+        LayCommand(), CrackCommand(), Magic8BallCommand(), CensorCommand(), LeaderboardCommand(), PingCommand(),
+        HelpCommand(), EntertainmentHelpCommand(), ModerationHelpCommand(), UtilitiesHelpCommand())
+
+
 private var dispatcher: CommandDispatcher? = null
 
 fun initCommandsSystem() {
@@ -116,6 +121,9 @@ annotation class RequireArguments(val min: Int = 0, val max: Int = Int.MAX_VALUE
 @kotlin.annotation.Retention(AnnotationRetention.RUNTIME)
 annotation class RequirePermissions(vararg val value: Permission = [])
 
+@Target(AnnotationTarget.ANNOTATION_CLASS, AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class SetCategory(val value: CommandCategory)
 
 /**
  * This is the egg command class, the base class for every commands that
@@ -163,6 +171,8 @@ abstract class EggCommand : CommandExecutor {
      */
     val cooldown: Long
 
+    val category: CommandCategory
+
     /**
      * The special cooldown in milliseconds
      */
@@ -192,7 +202,7 @@ abstract class EggCommand : CommandExecutor {
                 return false
             } else if (!getMembersInGuild().contains(message.member!!.idLong) && date.time - executed[member.user]!!.time <= cooldown) {
                 message.channel.sendMessage(embedMessage(":timer: Sorry, you have to wait `${cooldown / 1000}` seconds before " +
-                        "re-executing. If you are in our server, the cooldown is `${cooldownSpecial / 1000}` seconds. " +
+                        "re-executing. If you are in our [server](https://discord.gg/KykFgvwcDN), the cooldown is `${cooldownSpecial / 1000}` seconds. " +
                         "Some commands have different cooldowns.", RED_BAD)).queue()
                 return false
             } else executed.remove(member.user)
@@ -212,9 +222,25 @@ abstract class EggCommand : CommandExecutor {
                 return false
             }
         }
-        executeCommand(member, message, args)
+
+        try {
+            executeCommand(member, message, args)
+        } catch (e: Exception) {
+            message.channel.sendMessage(embedMessage(":x: `${e.javaClass.name}` has been thrown, resulting in a " +
+                                        "fatal error in the command process. The bot developers " +
+                                        "have been contacted and will try to fix this shortly. Please ensure that the " +
+                                        "command is used properly in the meanwhile, or refrain from using it if the " +
+                                        "error persists.", RED_V_BAD)).mapToResult().queue()
+            // send error
+            // error logs
+            val error = EmbedBuilder()
+                    .setTitle(e.javaClass.name)
+                    .setDescription("**Executed command:** ${message.contentRaw}\n**Exception:** ${limitString(e.stackTraceToString(), 500, "...")}}")
+                    .setColor(RED_BAD)
+                    .build()
+            getEggGuild().getTextChannelById(871399763101237269)!!.sendMessage(error).mapToResult().queue()
+        }
         executed[member.user] = Date()
-        println("Command has been executed")
         return true
     }
 
@@ -224,6 +250,7 @@ abstract class EggCommand : CommandExecutor {
         val args: RequireArguments? = this.javaClass.getAnnotation(RequireArguments::class.java)
         val perms: RequirePermissions? = this.javaClass.getAnnotation(RequirePermissions::class.java)
         val cooldown: Cooldown? = this.javaClass.getAnnotation(Cooldown::class.java)
+        val cat: SetCategory? = this.javaClass.getAnnotation(SetCategory::class.java)
         name = cmd.value
         if (help != null) {
             this.help = help.help
@@ -236,6 +263,7 @@ abstract class EggCommand : CommandExecutor {
         range = if (args != null) {
             Range.between(args.min, args.max)
         } else Range.between(0, Int.MAX_VALUE)
+        category = cat?.value ?: CommandCategory.UTILITIES
         this.cooldown = cooldown?.defaultCooldown ?: 15000
         this.cooldownSpecial = cooldown?.specialCooldown?: 5000
         permissions = if (perms == null) emptyArray() else fromOutArray(perms.value)
@@ -246,6 +274,72 @@ abstract class EggCommand : CommandExecutor {
      */
     fun getPermissions() : Array<Permission> {
         return permissions.copyOf()
+    }
+
+}
+
+/**
+ * @return The command if it exists
+ */
+fun getCommand(name: String) : EggCommand? {
+    var eCommand: EggCommand? = null
+    commands.forEach { cmd -> if (cmd.name.equals(name, true)) {
+            eCommand = cmd
+            return@forEach
+        }
+    }
+    return eCommand
+}
+
+/**
+ * An enum that enables commands to be categorized
+ */
+enum class CommandCategory {
+
+    /**
+     * Represents a command used for entertainment(s)
+     */
+    ENTERTAINMENT,
+
+    /**
+     * Represents a command user for moderation
+     */
+    MODERATION,
+
+    /**
+     * Represents a command that are useful/used other than for
+     * the purposes above
+     */
+    UTILITIES;
+
+    /**
+     * Gets the command of the current category.
+     *
+     * @return An array list of commands of this category. Modifying this [List] will not modify
+     * the original [List] used to indicate the [CommandCategory]
+     */
+    fun getCommands() : ArrayList<EggCommand> {
+        if (entertainment.isEmpty() || moderation.isEmpty() || utilities.isEmpty()) {
+            // reload
+            commands.forEach { cmd -> run {
+                when (cmd.category) {
+                    ENTERTAINMENT -> entertainment.add(cmd)
+                    MODERATION -> moderation.add(cmd)
+                    else -> utilities.add(cmd)
+                }
+            } }
+        }
+        return when {
+            this == ENTERTAINMENT -> ArrayList(entertainment)
+            this == MODERATION -> ArrayList(moderation)
+            else -> ArrayList(utilities)
+        }
+    }
+
+    private companion object Categories {
+        val entertainment = ArrayList<EggCommand>()
+        val moderation = ArrayList<EggCommand>()
+        val utilities = ArrayList<EggCommand>()
     }
 
 }

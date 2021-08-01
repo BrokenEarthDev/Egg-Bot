@@ -20,6 +20,7 @@ import kotlin.math.min
         usage = "`purge number`")
 @RequireArguments(min = 1, max = 1)
 @RequirePermissions(value = [Permission.MESSAGE_HISTORY, Permission.MESSAGE_MANAGE])
+@SetCategory(CommandCategory.MODERATION)
 class PurgeCommand : EggCommand() {
 
     /**
@@ -91,6 +92,7 @@ class PurgeCommand : EggCommand() {
             usage = "`e!censor exact? words`")
 @RequireArguments(min = 2)
 @RequirePermissions(Permission.MESSAGE_MANAGE)
+@SetCategory(CommandCategory.MODERATION)
 class CensorCommand : EggCommand() {
     /**
      * Executes the command
@@ -126,8 +128,7 @@ class CensorCommand : EggCommand() {
             var len = 0
             val arr = ArrayList<String>()
             for (int in contains) {
-                val sentence = "${int.word} (whitespace " + (if (int.ignoreWhiteSpace) " **will** "
-                                    else " **will not** ") + "be ignored)"
+                val sentence = "${int.word} (exact is set to ${int.exact})"
                 len += sentence.length
                 if (len > 200)
                     break
@@ -143,7 +144,7 @@ class CensorCommand : EggCommand() {
         val embed = EmbedBuilder()
                 .setTitle(":partying_face: Congratulations! Censored phrase(s)")
                 .setColor(UFO_GREEN)
-                .setDescription("**Word Censored:** $word\n**Ignore Whitespace?** $bool")
+                .setDescription("**Word Censored:** $word\n**Exact?** $bool")
                 .setFooter("Added by ${sender.user.idLong}")
                 .setTimestamp(Instant.now())
                 .build()

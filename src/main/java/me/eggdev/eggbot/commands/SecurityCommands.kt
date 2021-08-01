@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
 
+@SetCategory(CommandCategory.MODERATION)
 class SecurityCommand : EggCommand() {
     /**
      * Executes the command
@@ -28,6 +29,7 @@ class SecurityCommand : EggCommand() {
             usage = "`e!blacklist @user`, `e!blacklist equals/contains name`")
 @RequireArguments(min = 1)
 @RequirePermissions(Permission.BAN_MEMBERS, Permission.ADMINISTRATOR)
+@SetCategory(CommandCategory.MODERATION)
 class BlacklistCommand : EggCommand() {
     /**
      * Executes the command

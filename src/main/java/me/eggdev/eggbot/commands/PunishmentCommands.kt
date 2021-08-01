@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
+import java.lang.Exception
 import java.lang.StringBuilder
 import java.util.concurrent.TimeUnit
 
@@ -21,6 +22,7 @@ import java.util.concurrent.TimeUnit
         "or `mute @user duration reason`.")
 @RequireArguments(min = 2)
 @RequirePermissions(Permission.ADMINISTRATOR)
+@SetCategory(CommandCategory.MODERATION)
 class MuteCommand : EggCommand() {
 
     /**
@@ -78,6 +80,7 @@ class MuteCommand : EggCommand() {
         usage = "`ban user` or `ban user reason`")
 @RequireArguments(min = 1)
 @RequirePermissions(Permission.BAN_MEMBERS)
+@SetCategory(CommandCategory.MODERATION)
 class BanCommand : EggCommand() {
 
     /**
@@ -122,7 +125,7 @@ class BanCommand : EggCommand() {
                                     run {
                                         val future = executorService.schedule({
                                             unregisterAwaitReaction(msg)
-                                            msg.delete().queue()
+                                            msg.delete().mapToResult().queue()
                                             message.reply(embedMessage(":clock6: **Time ran out!** You had 60 seconds to confirm the ban.", RED_BAD)).queue()
                                         }, 60L, TimeUnit.SECONDS)
                                         if (mem != sender || emo.asReactionCode != "☑")
@@ -175,6 +178,7 @@ class BanCommand : EggCommand() {
         usage = "`e!warn @user reason` or `e!warn @user` / `-warn clear @user number`")
 @RequireArguments(min = 1)
 @RequirePermissions(Permission.MANAGE_SERVER)
+@SetCategory(CommandCategory.MODERATION)
 class WarnCommand : EggCommand() {
 
     /**
@@ -219,6 +223,7 @@ class WarnCommand : EggCommand() {
             "tag of the user", usage = "`e!kick @user` or `e!kick @user reason`")
 @RequireArguments(min = 1)
 @RequirePermissions(Permission.KICK_MEMBERS)
+@SetCategory(CommandCategory.MODERATION)
 class KickCommand : EggCommand() {
 
     /**
@@ -257,6 +262,7 @@ class KickCommand : EggCommand() {
 @CommandHelp(help = "View the number of warnings a member has by executing `-warns @user`. To view a specific warning, " +
         "execute `-warns @user number`. To view your warnings, you can omit the `@user` arguments as a shortcut.",
         usage = "`-warns @user` or `-warns @user number` / `-warns` or `-warns number`")
+@SetCategory(CommandCategory.MODERATION)
 class WarnsCommand : EggCommand() {
 
     /**

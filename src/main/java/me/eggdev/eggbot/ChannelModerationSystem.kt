@@ -18,7 +18,7 @@ fun initChannelModSystem() {
  * @param ignoreWhiteSpace Whether whitespace will be ignored
  *                         or not
  */
-class BannedWord(val word: String, val ignoreWhiteSpace: Boolean) {
+class BannedWord(val word: String, val exact: Boolean) {
 
     /**
      * Checks whether the word is contained in the [string]. If [ignoreWhiteSpace]
@@ -28,11 +28,11 @@ class BannedWord(val word: String, val ignoreWhiteSpace: Boolean) {
      * @return Whether [word] is contained in [string]
      */
     fun check(string: String) : Boolean {
-        val new = if (ignoreWhiteSpace) word.replace(" ", "")
+        val new = if (!exact) word.replace(" ", "")
                         else word
-        val content = if (ignoreWhiteSpace) string.replace(" ", "")
+        val content = if (!exact) string.replace(" ", "")
                             else string
-        return content.contains(new)
+        return content.toLowerCase().contains(new.toLowerCase())
     }
 }
 

@@ -302,6 +302,12 @@ fun createBulletedListOf(vararg string: String) : String {
     return builder.toString().trimEnd()
 }
 
+fun limitString(string: String, maxChar: Int, truncateStr: String) : String {
+    return if (string.length > maxChar) {
+        string.dropLast(truncateStr.length) + truncateStr
+    } else string
+}
+
 /**
  * Allows for creation of a range
  */
