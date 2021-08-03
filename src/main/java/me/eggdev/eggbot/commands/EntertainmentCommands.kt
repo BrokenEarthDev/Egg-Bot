@@ -280,17 +280,17 @@ class StealCommand : EggCommand() {
                             "the user isn't in the server. If this was an error, please try again.", RED_BAD)).queue()
                 } else {
                     val member: Member = res.get()
-                    var eggs = currencySystem!!.getEggs(member.user)
-                    var amount_stolen = ThreadLocalRandom.current().nextInt(-1, 11)
-                    if (amount_stolen == -1) {+
+                    val eggs = currencySystem!!.getEggs(member.user)
+                    val amount_stolen = ThreadLocalRandom.current().nextInt(-1, 11)
+                    if (amount_stolen == -1) {
                         currencySystem!!.removeEggs(sender.user, (0.1 * eggs).roundToInt())
                         message.reply(embedMessage("You got caught and had to pay " +
                                 (0.1 * eggs) + " to get bailed out.", RED_BAD)).queue()
                         message.reply(embedMessage("You couldn't steal anything haha", RED_BAD)).queue()
                     } else {
-                        var stolen = amount_stolen * eggs
+                        val stolen = amount_stolen * eggs
                         currencySystem!!.removeEggs(member.user, stolen)
-                   +     currencySystem!!.addEggs(sender.user, stolen)
+                        currencySystem!!.addEggs(sender.user, stolen)
                         message.reply(embedMessage("You stole: " +
                                 stolen + " Eggs from " + member.user + ".", UFO_GREEN)).queue()
                     }
