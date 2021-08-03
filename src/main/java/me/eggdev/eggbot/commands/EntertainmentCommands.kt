@@ -13,7 +13,7 @@ import java.util.concurrent.ThreadLocalRandom
 import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
-import kotlin.math.max
+import kotlin.math.roundToInt
 
 // The gif images to show when a user executes e!lay
 val eggLayLinks = arrayListOf(  "https://media.giphy.com/media/gTt2q509ZA4xZqxxKU/giphy.gif",
@@ -256,3 +256,46 @@ class Magic8BallCommand : EggCommand() {
 
 }
 
+@CommandName("steal")
+@CommandHelp(help = "Steals a certain number of Eggs from the targeted user", "e!steal @target")
+@RequireArguments(min = 2)
+@SetCategory(CommandCategory.ENTERTAINMENT)
+
+class StealCommand : EggCommand() {
+
+    /**
+     * Executes the command
+     *
+     * @param sender The member who executed the command
+     * @param message The command message
+     * @param args The arguments of the command, excluding the command itself
+     * @return Whether the execution is considered to be 'successful'
+     */
+    override fun executeCommand(sender: Member, message: Message, args: List<String>): Boolean {
+        sender.guild.retrieveMemberById(fromTag(args[0]))
+            .mapToResult()
+            .queue { res ->
+                if (res.isFailure) {
+                    message.reply(embedMessage("❌ You can't steal Eggs from this user because " +
+                            "the user isn't in the server. If this was an error, please try again.", RED_BAD)).queue()
+                } else {
+                    val member: Member = res.get()
+                    var eggs = currencySystem!!.getEggs(member.user)
+                    var amount_stolen = ThreadLocalRandom.current().nextInt(-1, 11)
+                    if (amount_stolen == -1) {+
+                        currencySystem!!.removeEggs(sender.user, (0.1 * eggs).roundToInt())
+                        message.reply(embedMessage("You got caught and had to pay " +
+                                (0.1 * eggs) + " to get bailed out.", RED_BAD)).queue()
+                        message.reply(embedMessage("You couldn't steal anything haha", RED_BAD)).queue()
+                    } else {
+                        var stolen = amount_stolen * eggs
+                        currencySystem!!.removeEggs(member.user, stolen)
+                   +     currencySystem!!.addEggs(sender.user, stolen)
+                        message.reply(embedMessage("You stole: " +
+                                stolen + " Eggs from " + member.user + ".", UFO_GREEN)).queue()
+                    }
+                }
+            }
+        return true
+    }
+}
