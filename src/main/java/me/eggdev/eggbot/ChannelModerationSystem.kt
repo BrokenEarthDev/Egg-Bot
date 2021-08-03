@@ -15,8 +15,7 @@ fun initChannelModSystem() {
  * Represents a banned word from chat
  *
  * @param word The word that is banned
- * @param ignoreWhiteSpace Whether whitespace will be ignored
- *                         or not
+ * @param exact Whether whitespace should not be ignored
  */
 class BannedWord(val word: String, val exact: Boolean) {
 

@@ -1,11 +1,19 @@
 package me.eggdev.eggbot
 
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent
+import net.dv8tion.jda.api.events.message.guild.GuildMessageDeleteEvent
+import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 
 val blacklistingManagers = HashMap<Long, GuildBlacklistingManager>()
+
+val messagesChannel = HashMap<Long, Long>()
+val moderationChannel = HashMap<Long, Long>()
+val otherChannel = HashMap<Long, Long>()
 
 fun initSecuritySystem() {
     jda.addEventListener(JoinListener())
@@ -81,4 +89,16 @@ private class JoinListener : ListenerAdapter() {
             ban(event.member, event.guild.selfMember, "You are blacklisted")
         }
     }
+}
+
+private class MessageListener : ListenerAdapter() {
+
+    override fun onGuildMessageUpdate(event: GuildMessageUpdateEvent) {
+
+    }
+
+    override fun onGuildMessageDelete(event: GuildMessageDeleteEvent) {
+        super.onGuildMessageDelete(event)
+    }
+
 }

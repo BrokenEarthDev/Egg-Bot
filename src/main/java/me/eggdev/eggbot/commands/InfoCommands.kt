@@ -2,10 +2,13 @@ package me.eggdev.eggbot.commands
 
 import me.eggdev.eggbot.*
 import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.Emote
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
 import java.awt.Color
+import java.time.Instant
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.min
@@ -239,4 +242,40 @@ class UtilitiesHelpCommand : HelpCommand() {
         message.channel.sendMessage(u).queue()
         return true
     }
+}
+
+@CommandName("poll")
+@CommandHelp(help = "Sends a poll for user to vote by executing `e!poll question`", usage = "`e!poll question`")
+@RequireArguments(min = 1)
+@RequirePermissions(Permission.MANAGE_CHANNEL)
+@SetCategory(CommandCategory.UTILITIES)
+class PollCommand : EggCommand() {
+    /**
+     * Executes the command
+     *
+     * @param sender The member who executed the command
+     * @param message The command message
+     * @param args The arguments of the command, excluding the command itself
+     * @return Whether the execution is considered to be 'successful'
+     */
+    override fun executeCommand(sender: Member, message: Message, args: List<String>): Boolean {
+        val question = combineStrings(args, 0)
+        if (question.endsWith("?")) question.dropLast(1)
+        val poll = EmbedBuilder()
+                .setTitle("Poll: $question :grey_question: ")
+                .setColor(FLIRTATIOUS)
+                .setFooter("Poll created by ${sender.user.asTag}")
+                .setTimestamp(Instant.now())
+                .build()
+        message.channel.sendMessage(poll).queue { send ->
+            run {
+                send.addReaction("☑").queue()
+
+                send.addReaction(emotes("maybe", false)[0]).queue()
+                send.addReaction(emotes("cross_mark", false)[0]).queue()
+            }
+        }
+        return true
+    }
+
 }
