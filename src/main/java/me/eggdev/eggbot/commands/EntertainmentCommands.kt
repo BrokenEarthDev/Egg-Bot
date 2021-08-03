@@ -286,11 +286,12 @@ class StealCommand : EggCommand() {
                         currencySystem!!.removeEggs(sender.user, (0.1 * eggs).roundToInt())
                         message.reply(embedMessage("You got caught and had to pay " +
                                 (0.1 * eggs) + " to get bailed out.", RED_BAD)).queue()
+                    else if (amount_stolen == 0) {
                         message.reply(embedMessage("You couldn't steal anything haha", RED_BAD)).queue()
                     } else {
                         var stolen = amount_stolen * eggs
                         currencySystem!!.removeEggs(member.user, stolen)
-                   +     currencySystem!!.addEggs(sender.user, stolen)
+                        currencySystem!!.addEggs(sender.user, stolen)
                         message.reply(embedMessage("You stole: " +
                                 stolen + " Eggs from " + member.user + ".", UFO_GREEN)).queue()
                     }
