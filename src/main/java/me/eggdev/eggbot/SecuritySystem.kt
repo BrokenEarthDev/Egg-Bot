@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageDeleteEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
+import java.util.concurrent.TimeUnit
 
 val blacklistingManagers = HashMap<Long, GuildBlacklistingManager>()
 
@@ -82,7 +83,7 @@ class GuildBlacklistingManager(val guild: Long,
 private class JoinListener : ListenerAdapter() {
 
     override fun onGuildMemberJoin(event: GuildMemberJoinEvent) {
-        // check if blacklisted
+             // check if blacklisted
         val get = blacklistingManagers[event.guild.idLong]
         if (get != null && get.isBlacklisted(event.member.user)) {
             // user blacklisted, ban
