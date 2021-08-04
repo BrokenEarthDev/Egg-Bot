@@ -321,7 +321,6 @@ class PollCommand : EggCommand() {
 @SetCategory(CommandCategory.UTILITIES)
 
 class EggsCommand : EggCommand() {
-
     /**
      * Executes the command
      *
@@ -336,7 +335,7 @@ class EggsCommand : EggCommand() {
             .queue { res ->
                 if (res.isFailure) {
                     message.reply(embedMessage("❌ You can't check the number of eggs from this user has because " + "the user isn't in the server. If this was an error, please try again.", RED_BAD)).queue()
-                } else if (args.size == 1) {
+                } else if (args.isEmpty() == false) {
                     val member: Member = res.get()
                     val eggs = currencySystem!!.getEggs(member.user)
                     message.reply(embedMessage("This user has: " + eggs + ":egg: 's", UFO_GREEN)).queue()
