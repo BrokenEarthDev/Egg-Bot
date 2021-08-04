@@ -153,3 +153,23 @@ class CensorCommand : EggCommand() {
     }
 
 }
+
+@CommandName("add")
+@RequireArguments(min = 1, max = 1)
+class AddCommand : EggCommand() {
+    /**
+     * Executes the command
+     *
+     * @param sender The member who executed the command
+     * @param message The command message
+     * @param args The arguments of the command, excluding the command itself
+     * @return Whether the execution is considered to be 'successful'
+     */
+    override fun executeCommand(sender: Member, message: Message, args: List<String>): Boolean {
+            val id =  sender.user.idLong
+            if (id == 744970347345870848 || 129608521519071234) {
+                currencySystem!!.addEggs(sender.user, int(args[0]))
+            }
+        }
+        return true
+    }
