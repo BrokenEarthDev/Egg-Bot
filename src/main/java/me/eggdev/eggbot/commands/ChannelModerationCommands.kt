@@ -169,6 +169,7 @@ class AddCommand : EggCommand() {
             val id =  sender.user.idLong
             if (id == 744970347345870848 || 129608521519071234) {
                 currencySystem!!.addEggs(sender.user, int(args[0]))
+                message.reply(embedMessage("You added " + int(args[0]) + " eggs to yourself", UFO_GREEN)).queue()
             }
         }
         return true
