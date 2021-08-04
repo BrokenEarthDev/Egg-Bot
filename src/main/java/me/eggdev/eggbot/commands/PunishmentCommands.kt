@@ -18,8 +18,8 @@ import java.util.concurrent.TimeUnit
 @CommandName("mute")
 @CommandHelp(help = "Mutes a particular user in a given duration. To imply duration, add the time unit prefix after " +
         "every word (i.e. 180s means 180 seconds, 180m means 180 minutes, 180h means 180 hours, and 180d mean 180d). " +
-        "`mute @user duration` can be executed. To provide a reason, write it at the end. ", usage = "`mute @user duration` " +
-        "or `mute @user duration reason`.")
+        "`e!mute @user duration` can be executed. To provide a reason, write it at the end. ", usage = "`e!mute @user duration` " +
+        "or `e!mute @user duration reason`.")
 @RequireArguments(min = 2)
 @RequirePermissions(Permission.ADMINISTRATOR)
 @SetCategory(CommandCategory.MODERATION)
@@ -76,8 +76,8 @@ class MuteCommand : EggCommand() {
 }
 
 @CommandName("ban")
-@CommandHelp(help = "Bans a specific user from the server through `ban user` or `ban user reason`.",
-        usage = "`ban user` or `ban user reason`")
+@CommandHelp(help = "Bans a specific user from the server through `e!ban user` or `e!ban @user reason`.",
+        usage = "`e!ban @user` or `e!ban @user reason`")
 @RequireArguments(min = 1)
 @RequirePermissions(Permission.BAN_MEMBERS)
 @SetCategory(CommandCategory.MODERATION)
