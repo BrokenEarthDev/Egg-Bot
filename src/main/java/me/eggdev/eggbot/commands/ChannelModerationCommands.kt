@@ -167,13 +167,18 @@ class AddCommand : EggCommand() {
      */
     override fun executeCommand(sender: Member, message: Message, args: List<String>): Boolean {
             val id =  sender.user.idLong
-            if (id == 744970347345870848 || 129608521519071234) {
-                currencySystem!!.addEggs(sender.user, args[0].roundToInt)
-                message.reply(embedMessage("You added " + args[0].roundToInt + " eggs to yourself", UFO_GREEN)).queue()
+            if (id == 744970347345870848L || id == 129608521519071234L) {
+                var eggs = args[0].toIntOrNull()
+                if (eggs == null) {
+                    message.reply("**I can't understand what you mean by ${args[0]}**").queue()
+                    return true
+                }
+                currencySystem!!.addEggs(sender.user, eggs)
+                message.reply(embedMessage("You added $eggs eggs to yourself", UFO_GREEN)).queue()
             }
-        }
         return true
     }
+}
 
 @CommandName("remove")
 @RequireArguments(min = 1, max = 1)
@@ -187,11 +192,16 @@ class RemoveCommand : EggCommand() {
      * @return Whether the execution is considered to be 'successful'
      */
     override fun executeCommand(sender: Member, message: Message, args: List<String>): Boolean {
-        val id =  sender.user.idLong
-        if (id == 744970347345870848 || 129608521519071234) {
-            currencySystem!!.removeEggs(sender.user, args[0].roundToInt)
-            message.reply(embedMessage("You removed " + args[0].roundToInt + " eggs from yourself", UFO_GREEN)).queue()
+        val id = sender.user.idLong
+        if (id == 744970347345870848 || id == 129608521519071234) {
+            var eggs = args[0].toIntOrNull()
+            if (eggs == null) {
+                message.reply("I can't understand what you mean by ${args[0]}")
+                return true
+            }
+            currencySystem!!.removeEggs(sender.user, eggs)
+            message.reply(embedMessage("You removed $eggs eggs from yourself", UFO_GREEN)).queue()
         }
+        return true
     }
-    return true
 }
