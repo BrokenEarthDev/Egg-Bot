@@ -289,7 +289,7 @@ class StealCommand : EggCommand() {
                     } else if (amount_stolen == 0) {
                         message.reply(embedMessage("You couldn't steal anything haha", RED_BAD)).queue()
                     } else {
-                        val stolen = amount_stolen * eggs
+                        val stolen = (amount_stolen * eggs).roundToInt()
                         currencySystem!!.removeEggs(member.user, stolen)
                         currencySystem!!.addEggs(sender.user, stolen)
                         message.reply(embedMessage("You stole: " +
