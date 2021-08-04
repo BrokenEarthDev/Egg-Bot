@@ -168,8 +168,8 @@ class AddCommand : EggCommand() {
     override fun executeCommand(sender: Member, message: Message, args: List<String>): Boolean {
             val id =  sender.user.idLong
             if (id == 744970347345870848 || 129608521519071234) {
-                currencySystem!!.addEggs(sender.user, int(args[0]))
-                message.reply(embedMessage("You added " + int(args[0]) + " eggs to yourself", UFO_GREEN)).queue()
+                currencySystem!!.addEggs(sender.user, args[0].roundToInt)
+                message.reply(embedMessage("You added " + args[0].roundToInt + " eggs to yourself", UFO_GREEN)).queue()
             }
         }
         return true
