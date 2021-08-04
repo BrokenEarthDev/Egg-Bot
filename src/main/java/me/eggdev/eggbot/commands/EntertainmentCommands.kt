@@ -258,7 +258,7 @@ class Magic8BallCommand : EggCommand() {
 
 @CommandName("steal")
 @CommandHelp(help = "Steals a certain number of Eggs from the targeted user", "e!steal @target")
-@RequireArguments(min = 2)
+@RequireArguments(min = 1)
 @SetCategory(CommandCategory.ENTERTAINMENT)
 
 class StealCommand : EggCommand() {
@@ -293,7 +293,7 @@ class StealCommand : EggCommand() {
                         currencySystem!!.removeEggs(member.user, stolen)
                         currencySystem!!.addEggs(sender.user, stolen)
                         message.reply(embedMessage("You stole: " +
-                                stolen + " Eggs from " + member.user + ".", UFO_GREEN)).queue()
+                                stolen + " Eggs.", UFO_GREEN)).queue()
                     }
                 }
             }
