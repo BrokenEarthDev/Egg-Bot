@@ -12,6 +12,8 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import java.lang.Exception
 import java.util.*
+import java.util.concurrent.ScheduledFuture
+import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
@@ -21,7 +23,7 @@ import kotlin.collections.HashMap
 val commands: List<EggCommand> = listOf(WarnCommand(), MuteCommand(), BanCommand(), PurgeCommand(), MemeCommand(),
         LayCommand(), CrackCommand(), Magic8BallCommand(), CensorCommand(), LeaderboardCommand(), PingCommand(),
         HelpCommand(), EntertainmentHelpCommand(), ModerationHelpCommand(), UtilitiesHelpCommand(), PollCommand(),
-        StealCommand())
+        StealCommand(), EggsCommand())
 
 
 private var dispatcher: CommandDispatcher? = null
@@ -232,6 +234,7 @@ abstract class EggCommand : CommandExecutor {
                                         "have been contacted and will try to fix this shortly. Please ensure that the " +
                                         "command is used properly in the meanwhile, or refrain from using it if the " +
                                         "error persists.", RED_V_BAD)).mapToResult().queue()
+            e.printStackTrace()
             // send error
             // error logs
             val error = EmbedBuilder()
@@ -240,6 +243,7 @@ abstract class EggCommand : CommandExecutor {
                     .setColor(RED_BAD)
                     .build()
             getEggGuild().getTextChannelById(871399763101237269)!!.sendMessage(error).mapToResult().queue()
+
         }
         executed[member.user] = Date()
         return true
@@ -335,12 +339,110 @@ enum class CommandCategory {
             this == MODERATION -> ArrayList(moderation)
             else -> ArrayList(utilities)
         }
+
     }
 
     private companion object Categories {
         val entertainment = ArrayList<EggCommand>()
         val moderation = ArrayList<EggCommand>()
         val utilities = ArrayList<EggCommand>()
+    }
+
+}
+
+/**
+ * Sets a timecap for every [User] who uses the [command]
+ *
+ * @param command The command instance
+ */
+class CommandTimecap(val command: EggCommand) {
+
+    // The map of user-ids to the
+    // date corresponding to the times
+    // the person has used the command
+    private val map: HashMap<Long, ArrayList<Date>> = HashMap()
+    private var refresh: TimeUnit = TimeUnit.MILLISECONDS // The time unit of refresh time
+    private var refreshTime = -1 // The amount of time
+    private var maxNumberOfExecs = -1 // The maximum number of execution before the
+                                      // refresh time elapses
+
+    // The cleanup schedule to ensure that there are no
+    // "ghost" entries in the map
+    private lateinit var cleanupSchedule: ScheduledFuture<*>
+
+    /**
+     * Sets the the maximum amount the command can be used per
+     * [unit]. After [refreshTime] [unit]s has elapsed, the user
+     * can use the command up to [maxExecs] number of
+     * time.
+     * <p>
+     * This sets a cap on every user to use the command [maxExecs]
+     * amount of time per [refreshTime] [unit]
+     *
+     * @param maxExecs The maximum number of executions
+     * @param refreshTime The amount of time
+     * @param unit The [TimeUnit] of the [refreshTime]
+     */
+    fun setCap(maxExecs: Int, refreshTime: Int, unit: TimeUnit) {
+        this.refreshTime = refreshTime
+        refresh = unit
+        maxNumberOfExecs = maxExecs
+
+        // start cleanup task (to save cache)
+        cleanupSchedule.cancel(false)
+        cleanupSchedule = executorService.scheduleAtFixedRate({ run {
+            val millis = TimeUnit.MILLISECONDS.convert(refreshTime.toLong(), unit)
+            val now = Date()
+                map.forEach { (t, u) -> run {
+                    u.forEach { date ->
+                        if (now.time - date.time < millis)
+                            u.remove(date)
+                    }
+                } }
+            }
+            // ensure refreshTime difference per execution to
+            // remove "ghost" entries
+        }, refreshTime.toLong(), refreshTime.toLong(), unit)
+    }
+
+    /**
+     * Checks whether the user is above the cap set, or equal to
+     * the cap set
+     *
+     * @param user The user
+     * @return Whether the [user] is above (or equal) the cap
+     */
+    fun atCap(user: User) : Boolean {
+        if (refreshTime < 0 || maxNumberOfExecs < 0)
+            return false
+        val list = map.getOrDefault(user.idLong, ArrayList())
+        if (list.size > maxNumberOfExecs)
+            return false
+        var exceeded = 0
+        val now = Date()
+        val millis = TimeUnit.MILLISECONDS.convert(refreshTime.toLong(), refresh)
+        for (date in list) {
+            if (date.time - now.time < millis) exceeded++
+        }
+        return exceeded >= maxNumberOfExecs
+    }
+
+    /**
+     * Registers the user into the cap
+     *
+     * @param user The user
+     * @return Whether the [user] is successfully registered
+     * or not due to the cap
+     */
+    fun register(user: User) : Boolean {
+        if (atCap(user))
+            return false
+        val dates = map.getOrDefault(user.idLong, ArrayList())
+        dates.add(Date())
+
+        if (!map.containsKey(user.idLong))
+            map[user.idLong] = dates
+        return true
     }
 
 }
