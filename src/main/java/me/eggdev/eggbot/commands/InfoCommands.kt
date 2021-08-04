@@ -330,12 +330,7 @@ class EggsCommand : EggCommand() {
      * @return Whether the execution is considered to be 'successful'
      */
     override fun executeCommand(sender: Member, message: Message, args: List<String>): Boolean {
-        sender.guild.retrieveMemberById(fromTag(args[0]))
-            .mapToResult()
-            .queue { res ->
-                if (res.isFailure) {
-                    message.reply(embedMessage("❌ You can't check the number of eggs from this user has because " + "the user isn't in the server. If this was an error, please try again.", RED_BAD)).queue()
-                } else if (args.size == 1) {
+                if (args.size == 1) {
                     val member: Member = res.get()
                     val eggs = currencySystem!!.getEggs(member.user)
                     message.reply(embedMessage("This user has: " + eggs + ":egg: 's", UFO_GREEN)).queue()
