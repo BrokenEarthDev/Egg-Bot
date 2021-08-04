@@ -10,7 +10,7 @@ import net.dv8tion.jda.api.requests.restaction.AuditableRestAction
 import java.time.Instant
 import java.util.concurrent.TimeUnit
 import kotlin.math.min
-
+import kotlin.math.roundToInt
 /**
  * Purges a given number of messages (up to 100) in the text channel where this command
  * was sent.
