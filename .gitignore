@@ -1,3 +1,8 @@
 .idea/
-target
+.idea/*
+.idea/shelf/
+.idea/shelf/*
+
 EggBot.iml
+target
+target/*
