@@ -281,20 +281,32 @@ class StealCommand : EggCommand() {
                 } else {
                     val member: Member = res.get()
                     val eggs = currencySystem!!.getEggs(member.user)
-                    val amount_stolen = ThreadLocalRandom.current().nextInt(-1, 11)
-                    if (amount_stolen == -1) {
-                        currencySystem!!.removeEggs(sender.user, (0.1 * eggs).roundToInt())
-                        message.reply(embedMessage("You got caught and had to pay " +
-                                (0.1 * eggs) + " to get bailed out.", RED_BAD)).queue()
-                    } else if (amount_stolen == 0) {
-                        message.reply(embedMessage("You couldn't steal anything haha", RED_BAD)).queue()
-                    } else {
-                        val stolen = (amount_stolen * eggs).roundToInt()
-                        currencySystem!!.removeEggs(member.user, stolen)
-                        currencySystem!!.addEggs(sender.user, stolen)
-                        message.reply(embedMessage("You stole: " +
-                                stolen + " Eggs.", UFO_GREEN)).queue()
-                    }
+                    if ((member.user) != (sender.user)) {
+                        if (eggs > 50) {
+                            val amount_stolen = ThreadLocalRandom.current().nextInt(-1, 11)
+                            if (amount_stolen == -1) {
+                                currencySystem!!.removeEggs(sender.user, (0.1 * eggs).roundToInt())
+                                message.reply(
+                                    embedMessage(
+                                        "You got caught and had to pay " +
+                                                (0.1 * eggs) + " to get bailed out.", RED_BAD
+                                    )
+                                ).queue()
+                            } else if (amount_stolen == 0) {
+                                message.reply(embedMessage("You couldn't steal anything haha", RED_BAD)).queue()
+                            } else {
+                                val stolen = (amount_stolen * eggs).roundToInt()
+                                currencySystem!!.removeEggs(member.user, stolen)
+                                currencySystem!!.addEggs(sender.user, stolen)
+                                message.reply(
+                                    embedMessage(
+                                        "You stole: " +
+                                                stolen + " Eggs.", UFO_GREEN
+                                    )
+                                ).queue()
+                            }
+                        } else {message.reply(embedMessage("You don't have enough Eggs (minimum 50)", RED_BAD)).queue()}
+                    } else {message.reply(embedMessage("You can't steal from yourself bakka", RED_BAD)}
                 }
             }
         return true
