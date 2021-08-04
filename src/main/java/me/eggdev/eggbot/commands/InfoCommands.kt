@@ -316,7 +316,7 @@ class PollCommand : EggCommand() {
 }
 
 @CommandName("egg")
-@CommandHelp(help = "Cheks the number of ':egg:'s you or another use has", "`e!eggs` or `e!eggs @target`")
+@CommandHelp(help = "Cheks the number of :egg: s you or another use has", "`e!eggs` or `e!eggs @target`")
 @RequireArguments(max = 1)
 @SetCategory(CommandCategory.UTILITIES)
 
@@ -339,10 +339,10 @@ class EggsCommand : EggCommand() {
                 } else if (args == 1) {
                     val member: Member = res.get()
                     val eggs = currencySystem!!.getEggs(member.user)
-                    message.reply(embedMessage("This user has: " + eggs + ":egg:s", UFO_GREEN)).queue()
+                    message.reply(embedMessage("This user has: " + eggs + ":egg: 's", UFO_GREEN)).queue()
                 } else {
                     eggs_sender = currencySystem!!.getEggs(sender.user)
-                    message.reply(embedMessage("You have: " + eggs_sender + ":egg:s", UFO_GREEN)).queue()
+                    message.reply(embedMessage("You have: " + eggs_sender + ":egg: 's", UFO_GREEN)).queue()
                 }
             }
         return true
