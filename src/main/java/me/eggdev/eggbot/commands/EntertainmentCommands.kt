@@ -293,7 +293,7 @@ class StealCommand : EggCommand() {
                         currencySystem!!.removeEggs(member.user, stolen)
                         currencySystem!!.addEggs(sender.user, stolen)
                         message.reply(embedMessage("You stole: " +
-                                stolen + " Eggs from " + member.user + ".", UFO_GREEN)).queue()
+                                stolen + " Eggs.", UFO_GREEN)).queue()
                     }
                 }
             }
