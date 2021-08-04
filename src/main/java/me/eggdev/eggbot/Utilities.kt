@@ -1,10 +1,7 @@
 package me.eggdev.eggbot
 
 import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.entities.MessageEmbed
-import net.dv8tion.jda.api.entities.MessageReaction
+import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import java.awt.Color
@@ -351,4 +348,13 @@ class Range<T : Number> {
             return range
         }
     }
+}
+
+// CUSTOM EMOJIS
+
+private val emojiGuild = jda.getGuildById(865256117705375754L) // Server where custom emojis
+                                                                   // are stored
+
+fun emotes(name: String, ignoreCase: Boolean) : List<Emote> {
+    return emojiGuild!!.getEmotesByName(name, ignoreCase)
 }
