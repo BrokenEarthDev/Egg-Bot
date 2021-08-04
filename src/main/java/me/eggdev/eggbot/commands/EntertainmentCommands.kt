@@ -258,7 +258,7 @@ class Magic8BallCommand : EggCommand() {
 
 @CommandName("steal")
 @CommandHelp(help = "Steals a certain number of Eggs from the targeted user", "`e!steal @target`")
-@RequireArguments(min = 1, max = 1)
+@RequireArguments(min = 1, max = 2)
 @SetCategory(CommandCategory.ENTERTAINMENT)
 
 class StealCommand : EggCommand() {
@@ -276,8 +276,7 @@ class StealCommand : EggCommand() {
             .mapToResult()
             .queue { res ->
                 if (res.isFailure) {
-                    message.reply(embedMessage("❌ You can't steal Eggs from this user because " +
-                            "the user isn't in the server. If this was an error, please try again.", RED_BAD)).queue()
+                    message.reply(embedMessage("❌ You can't steal Eggs from this user because " + "the user isn't in the server. If this was an error, please try again.", RED_BAD)).queue()
                 } else {
                     val member: Member = res.get()
                     val eggs = currencySystem!!.getEggs(member.user)
@@ -286,12 +285,7 @@ class StealCommand : EggCommand() {
                             val amount_stolen = ThreadLocalRandom.current().nextInt(-1, 11)
                             if (amount_stolen == -1) {
                                 currencySystem!!.removeEggs(sender.user, (0.1 * eggs).roundToInt())
-                                message.reply(
-                                    embedMessage(
-                                        "You got caught and had to pay " +
-                                                (0.1 * eggs) + " to get bailed out.", RED_BAD
-                                    )
-                                ).queue()
+                                message.reply(embedMessage("You got caught and had to pay " + (0.1 * eggs) + " to get bailed out.", RED_BAD)).queue()
                             } else if (amount_stolen == 0) {
                                 message.reply(embedMessage("You couldn't steal anything haha", RED_BAD)).queue()
                             } else {
@@ -299,11 +293,7 @@ class StealCommand : EggCommand() {
                                 currencySystem!!.removeEggs(member.user, stolen)
                                 currencySystem!!.addEggs(sender.user, stolen)
                                 message.reply(
-                                    embedMessage(
-                                        "You stole: " +
-                                                stolen + " Eggs.", UFO_GREEN
-                                    )
-                                ).queue()
+                                    embedMessage("You stole: " + stolen + " Eggs.", UFO_GREEN)).queue()
                             }
                         } else {message.reply(embedMessage("You don't have enough Eggs (minimum 50)", RED_BAD)).queue()}
                     } else {message.reply(embedMessage("You can't steal from yourself bakka", RED_BAD)}
