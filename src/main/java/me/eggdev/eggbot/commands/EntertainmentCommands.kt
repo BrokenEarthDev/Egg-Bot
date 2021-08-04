@@ -257,7 +257,7 @@ class Magic8BallCommand : EggCommand() {
 }
 
 @CommandName("steal")
-@CommandHelp(help = "Steals a certain number of Eggs from the targeted user", "```e!steal @target```")
+@CommandHelp(help = "Steals a certain number of Eggs from the targeted user", "`e!steal @target`")
 @RequireArguments(min = 1, max = 1)
 @SetCategory(CommandCategory.ENTERTAINMENT)
 
