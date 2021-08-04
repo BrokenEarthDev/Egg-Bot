@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction
+import org.apache.commons.collections4.map.LRUMap
 import java.time.Instant
 import java.util.concurrent.TimeUnit
 import kotlin.math.min
