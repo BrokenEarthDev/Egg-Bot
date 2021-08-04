@@ -316,10 +316,9 @@ class PollCommand : EggCommand() {
 }
 
 @CommandName("eggs")
-@CommandHelp(help = "Cheks the number of :egg: s you or another use has", "`e!eggs` or `e!eggs @target`")
-@RequireArguments(min = 1, max = 1)
+@CommandHelp(help = "Checks the number of :egg: s you or another use has", "`e!eggs` or `e!eggs @target`")
+@RequireArguments(max = 1)
 @SetCategory(CommandCategory.UTILITIES)
-
 class EggsCommand : EggCommand() {
     /**
      * Executes the command
@@ -330,15 +329,24 @@ class EggsCommand : EggCommand() {
      * @return Whether the execution is considered to be 'successful'
      */
     override fun executeCommand(sender: Member, message: Message, args: List<String>): Boolean {
-                if (args.size == 1) {
-                    val member: Member = res.get()
-                    val eggs = currencySystem!!.getEggs(member.user)
-                    message.reply(embedMessage("This user has: " + eggs + ":egg: 's", UFO_GREEN)).queue()
-                } else {
-                    eggs_sender = currencySystem!!.getEggs(sender.user)
-                    message.reply(embedMessage("You have: " + eggs_sender + ":egg: 's", UFO_GREEN)).queue()
-                }
-            }
-        return true
+        if (args.isEmpty()) {
+            // "e!eggs" executed
+            // get eggs for sender
+            val eggs = currencySystem!!.getEggs(sender.user)
+            message.reply(embedMessage("You have **$eggs** :egg:. You can gain more through leveling and " +
+                    "entertainment.", UFO_GREEN)).queue()
+        } else {
+            // "e!eggs @user" is executed
+            // args size is 1
+            // Convert first argument to user id to retrieve the target member
+            sender.guild.retrieveMemberById(fromTag(args[0]))
+                .queue {target -> run {
+                    val eggs = currencySystem!!.getEggs(target.user)
+                    message.reply(embedMessage("${target.user.asTag} has **$eggs** :egg:. They can gain more " +
+                            "through leveling and entertainment.", UFO_GREEN)).queue()
+                }}
+        }
+
+        return true // terminate
     }
 }

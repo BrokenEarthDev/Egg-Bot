@@ -92,7 +92,8 @@ class MemeCommand : EggCommand() {
 @SetCategory(CommandCategory.ENTERTAINMENT)
 class LayCommand : EggCommand() {
 
-    val execs = HashMap<User, ArrayList<Date>>()
+    private val execs = HashMap<User, ArrayList<Date>>()
+
     /**
      * Executes the command
      *
@@ -258,9 +259,8 @@ class Magic8BallCommand : EggCommand() {
 
 @CommandName("steal")
 @CommandHelp(help = "Steals a certain number of Eggs from the targeted user", "`e!steal @target`")
-@RequireArguments(min = 1, max = 2)
+@RequireArguments(min = 1, max = 1)
 @SetCategory(CommandCategory.ENTERTAINMENT)
-
 class StealCommand : EggCommand() {
 
     /**
@@ -295,7 +295,7 @@ class StealCommand : EggCommand() {
                                 message.reply(embedMessage("You stole: " + stolen + " Eggs.", UFO_GREEN)).queue()
                             }
                         } else {message.reply(embedMessage("You don't have enough Eggs (minimum 50)", RED_BAD)).queue()}
-                    } else {message.reply(embedMessage("You can't steal from yourself bakka", RED_BAD)}
+                    } else {message.reply(embedMessage("You can't steal from yourself bakka", RED_BAD))}
                 }
             }
         return true

@@ -301,7 +301,7 @@ fun createBulletedListOf(vararg string: String) : String {
 
 fun limitString(string: String, maxChar: Int, truncateStr: String) : String {
     return if (string.length > maxChar) {
-        string.dropLast(truncateStr.length) + truncateStr
+        string.substring(0, maxChar).dropLast(truncateStr.length) + truncateStr
     } else string
 }
 
