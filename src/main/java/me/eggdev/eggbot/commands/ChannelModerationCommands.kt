@@ -174,3 +174,24 @@ class AddCommand : EggCommand() {
         }
         return true
     }
+
+@CommandName("remove")
+@RequireArguments(min = 1, max = 1)
+class RemoveCommand : EggCommand() {
+    /**
+     * Executes the command
+     *
+     * @param sender The member who executed the command
+     * @param message The command message
+     * @param args The arguments of the command, excluding the command itself
+     * @return Whether the execution is considered to be 'successful'
+     */
+    override fun executeCommand(sender: Member, message: Message, args: List<String>): Boolean {
+        val id =  sender.user.idLong
+        if (id == 744970347345870848 || 129608521519071234) {
+            currencySystem!!.removeEggs(sender.user, args[0].roundToInt)
+            message.reply(embedMessage("You removed " + args[0].roundToInt + " eggs from yourself", UFO_GREEN)).queue()
+        }
+    }
+    return true
+}

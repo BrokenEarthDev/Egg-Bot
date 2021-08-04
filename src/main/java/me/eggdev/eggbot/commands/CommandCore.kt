@@ -23,7 +23,7 @@ import kotlin.collections.HashMap
 val commands: List<EggCommand> = listOf(WarnCommand(), MuteCommand(), BanCommand(), PurgeCommand(), MemeCommand(),
         LayCommand(), CrackCommand(), Magic8BallCommand(), CensorCommand(), LeaderboardCommand(), PingCommand(),
         HelpCommand(), EntertainmentHelpCommand(), ModerationHelpCommand(), UtilitiesHelpCommand(), PollCommand(),
-        StealCommand(), EggsCommand(), AddCommand())
+        StealCommand(), EggsCommand(), AddCommand(), RemoveCommand())
 
 
 private var dispatcher: CommandDispatcher? = null
