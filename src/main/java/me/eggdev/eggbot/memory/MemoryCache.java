@@ -60,19 +60,28 @@ public class MemoryCache<T> {
         if (lifespanMillis > 0) {
             // create lifespan
             EggBotKt.getExecutorService()
-                    .schedule(() -> {
-                        alive = false;
-                        object = null;
-
-                        if (write != null)
-                            write.cancel(false);
-                    }, lifespanMillis, TimeUnit.MILLISECONDS);
+                    .schedule(() -> killCache(false), lifespanMillis, TimeUnit.MILLISECONDS);
         }
 
         if (writeMillis > 0)
             writeCache();
         if (readMillis > 0)
             readCache();
+    }
+
+    /**
+     * Kills this cache.
+     *
+     * @param interrupt Interrupts the process
+     */
+    public void killCache(boolean interrupt) {
+        alive = false;
+        object = null;
+
+        if (write != null)
+            write.cancel(interrupt);
+        if (read != null)
+            read.cancel(interrupt);
     }
 
     /**
@@ -140,4 +149,43 @@ public class MemoryCache<T> {
                 }, readMillis, readMillis, TimeUnit.MILLISECONDS);
     }
 
+    /**
+     * Allows creating {@link MemoryCache} objects easier.
+     * @param <T> The type of the memory cache
+     */
+    public static class Builder<T> {
+        private int lifespan,  // lifespan of builder
+                write,  // refresh time of write operation
+                read; // refresh time of read operation
+
+        public Builder<T> setLifespanMillis(int lifespan) {
+            this.lifespan = lifespan;
+            return this;
+        }
+
+        public Builder<T> setWriteMillis(int write) {
+            this.write = write;
+            return this;
+        }
+
+        public Builder<T> setReadMillis(int read) {
+            this.read = read;
+            return this;
+        }
+
+        /**
+         * Creates a memory cache based on the data passed in
+         * to the builder methods
+         *
+         * @param initial   The initial value of T
+         * @param connector The storage connector for T
+         * @return A new memory cache object
+         */
+        public MemoryCache<T> create(T initial, StorageConnector<T, ? super Object> connector) {
+            return new MemoryCache<T>(initial, lifespan, write, read, connector);
+        }
+
+    }
+
 }
+

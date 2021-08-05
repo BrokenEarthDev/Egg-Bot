@@ -1,6 +1,8 @@
 package me.eggdev.eggbot
 
 import me.eggdev.eggbot.commands.initCommandsSystem
+import me.eggdev.eggbot.memory.FIFOList
+import me.eggdev.eggbot.memory.MemoryCache
 import net.codebox.homoglyph.Homoglyph
 import net.codebox.homoglyph.HomoglyphBuilder
 import net.dv8tion.jda.api.JDA
@@ -25,7 +27,11 @@ val jda: JDA = JDABuilder.create(System.getenv("EGG_TOKEN"), EnumSet.allOf(Gatew
 
 val homoglyphs = HomoglyphBuilder.build()
 
-val profiles: java.util.ArrayList<UserProfile> = ArrayList() // TODO extract user profiles
+val profiles = MemoryCache.Builder<FIFOList<UserProfile>>()
+    .setWriteMillis(1800000) // 30 mins
+    .create(FIFOList(500), null)
+
+// TODO extract user profiles
 val executorService: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor()
 
 private var eggGuild: Guild? = null
@@ -73,11 +79,11 @@ private class EggCommunityListener : ListenerAdapter() {
  */
 fun getProfile(user: User) : UserProfile {
     var profile: UserProfile? = null
-    profiles.forEach { p -> if (user == p.user) profile = p}
+    profiles.get().forEach { p -> if (user == p.user) profile = p}
     if (profile == null) {
         // add to list of user profiles
         val profileNew = UserProfile(user)
-        profiles.add(profileNew)
+        profiles.get().add(profileNew)
         return profileNew
     }
     return profile as UserProfile
