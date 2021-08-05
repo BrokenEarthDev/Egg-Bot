@@ -4,6 +4,7 @@ import me.eggdev.eggbot.*
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
+import java.util.concurrent.ThreadLocalRandom
 
 @SetCategory(CommandCategory.MODERATION)
 class SecurityCommand : EggCommand() {

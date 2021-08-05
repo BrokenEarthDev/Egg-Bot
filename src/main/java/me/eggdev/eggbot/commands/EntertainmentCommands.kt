@@ -282,22 +282,85 @@ class StealCommand : EggCommand() {
                     val eggs = currencySystem!!.getEggs(member.user)
                     if ((member.user) != (sender.user)) {
                         if (eggs > 50) {
-                            val amount_stolen = ThreadLocalRandom.current().nextInt(-1, 11)
-                            if (amount_stolen == -1) {
+                            val amountstolen = ThreadLocalRandom.current().nextInt(-1, 11)
+                            if (amountstolen == -1) {
                                 currencySystem!!.removeEggs(sender.user, (0.1 * eggs).roundToInt())
                                 message.reply(embedMessage("You got caught and had to pay " + (0.1 * eggs) + " to get bailed out.", RED_BAD)).queue()
-                            } else if (amount_stolen == 0) {
+                            } else if (amountstolen == 0) {
                                 message.reply(embedMessage("You couldn't steal anything haha", RED_BAD)).queue()
                             } else {
-                                val stolen = (amount_stolen * eggs * 0.01).roundToInt()
+                                val stolen = (amountstolen * eggs * 0.01).roundToInt()
                                 currencySystem!!.removeEggs(member.user, stolen)
                                 currencySystem!!.addEggs(sender.user, stolen)
-                                message.reply(embedMessage("You stole: " + stolen + " Eggs.", UFO_GREEN)).queue()
+                                message.reply(embedMessage("You stole: $stolen Eggs.", UFO_GREEN)).queue()
                             }
                         } else {message.reply(embedMessage("You don't have enough Eggs (minimum 50)", RED_BAD)).queue()}
                     } else {message.reply(embedMessage("You can't steal from yourself bakka", RED_BAD))}
                 }
             }
+        return true
+    }
+}
+
+@CommandName("capture")
+@CommandHelp(help = "When a pet appears use this command to throw Eggs at it to try and capture it! The more Eggs you use the higher the chance", "`e!capture number_of_eggs`")
+@RequireArguments(min = 1, max = 1)
+@SetCategory(CommandCategory.ENTERTAINMENT)
+class CaptureCommand : EggCommand() {
+
+    /**
+     * Executes the command
+     *
+     * @param sender The member who executed the command
+     * @param message The command message
+     * @param args The arguments of the command, excluding the command itself
+     * @return Whether the execution is considered to be 'successful'
+     */
+    override fun executeCommand(sender: Member, message: Message, args: List<String>): Boolean {
+        if (!eventIsOn) {
+            message.reply(embedMessage("No pet has appeared yet", RED_BAD)).queue()
+        } else {
+            val eggs = args[0].toIntOrNull()
+            if (eggs == null){
+                message.reply(embedMessage("I can't understand what you mean by ${args[0]}", RED_BAD)).queue()
+                return true
+            }
+
+            if (currencySystem!!.getEggs(sender.user) >= eggs) {
+                val capturechance = eggs * crackchance
+                val amountstolen = ThreadLocalRandom.current().nextInt(1, 101)
+                currencySystem!!.removeEggs(sender.user, eggs)
+                if (capturechance >= amountstolen) {
+                    message.reply(embedMessage("Capture successful! `:white_check_mark:`", UFO_GREEN))
+                    pet_inventory.toMutableList().add(petrandom)
+
+                } else {
+                    message.reply(embedMessage("Capture unsuccessful :( `:negative_squared_cross_mark:`", RED_BAD))
+                }
+            } else {
+                message.reply(embedMessage("You don' have $eggs`:egg:`s", RED_BAD))
+            }
+        }
+        return true
+    }
+}
+
+
+@CommandName("inventory")
+@CommandHelp(help = "Check your inventory for pets", "`e!inventory")
+@SetCategory(CommandCategory.ENTERTAINMENT)
+class InventoryCommand : EggCommand() {
+
+    /**
+     * Executes the command
+     *
+     * @param sender The member who executed the command
+     * @param message The command message
+     * @param args The arguments of the command, excluding the command itself
+     * @return Whether the execution is considered to be 'successful'
+     */
+    override fun executeCommand(sender: Member, message: Message, args: List<String>): Boolean {
+        message.reply(embedMessage(pet_inventory.joinToString(prefix = "[ ", separator = ", ", postfix = " ]"), UFO_GREEN))
         return true
     }
 }

@@ -10,8 +10,7 @@ import net.dv8tion.jda.api.requests.restaction.AuditableRestAction
 import org.apache.commons.collections4.map.LRUMap
 import java.time.Instant
 import java.util.concurrent.TimeUnit
-import kotlin.math.min
-import kotlin.math.roundToInt
+
 /**
  * Purges a given number of messages (up to 100) in the text channel where this command
  * was sent.
@@ -169,7 +168,7 @@ class AddCommand : EggCommand() {
     override fun executeCommand(sender: Member, message: Message, args: List<String>): Boolean {
             val id =  sender.user.idLong
             if (id == 744970347345870848L || id == 129608521519071234L) {
-                var eggs = args[0].toIntOrNull()
+                val eggs = args[0].toIntOrNull()
                 if (eggs == null) {
                     message.reply("**I can't understand what you mean by ${args[0]}**").queue()
                     return true
@@ -179,7 +178,6 @@ class AddCommand : EggCommand() {
             }
         return true
     }
-}
 
 @CommandName("remove")
 @RequireArguments(min = 1, max = 1)
@@ -195,7 +193,7 @@ class RemoveCommand : EggCommand() {
     override fun executeCommand(sender: Member, message: Message, args: List<String>): Boolean {
         val id = sender.user.idLong
         if (id == 744970347345870848 || id == 129608521519071234) {
-            var eggs = args[0].toIntOrNull()
+            val eggs = args[0].toIntOrNull()
             if (eggs == null) {
                 message.reply("I can't understand what you mean by ${args[0]}")
                 return true
@@ -205,4 +203,4 @@ class RemoveCommand : EggCommand() {
         }
         return true
     }
-}
+}}
