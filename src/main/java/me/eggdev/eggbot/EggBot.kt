@@ -1,5 +1,6 @@
 package me.eggdev.eggbot
 
+import initPetsSystem
 import me.eggdev.eggbot.commands.*
 import me.eggdev.eggbot.memory.FIFOList
 import net.codebox.homoglyph.HomoglyphBuilder
@@ -47,7 +48,7 @@ fun main() {
     initCurrencySystem()
     initChannelModSystem()
     initSecuritySystem()
-
+    initPetsSystem()
     eggGuild = jda.getGuildById(866458262064857089L)
     eggGuild!!.members.forEach {mem -> membersInGuild.add(mem.idLong)}
     jda.addEventListener(EggCommunityListener())

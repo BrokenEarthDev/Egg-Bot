@@ -1,11 +1,13 @@
 package me.eggdev.eggbot.commands
 
+import activeEvents
 import com.github.blad3mak3r.memes4j.Memes4J
 import me.eggdev.eggbot.*
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
+import retrieveInventory
 import java.lang.StringBuilder
 import java.time.Instant
 import java.util.*
@@ -317,7 +319,7 @@ class CaptureCommand : EggCommand() {
      * @return Whether the execution is considered to be 'successful'
      */
     override fun executeCommand(sender: Member, message: Message, args: List<String>): Boolean {
-        if (!eventIsOn) {
+        if (!activeEvents.contains(sender.guild.idLong)) {
             message.reply(embedMessage("No pet has appeared yet", RED_BAD)).queue()
         } else {
             val eggs = args[0].toIntOrNull()
@@ -332,7 +334,7 @@ class CaptureCommand : EggCommand() {
                 currencySystem!!.removeEggs(sender.user, eggs)
                 if (capturechance >= amountstolen) {
                     message.reply(embedMessage("Capture successful! `:white_check_mark:`", UFO_GREEN))
-                    pet_inventory.toMutableList().add(petrandom)
+                    retrieveInventory(sender.user).pets.add(petrandom)
 
                 } else {
                     message.reply(embedMessage("Capture unsuccessful :( `:negative_squared_cross_mark:`", RED_BAD))
