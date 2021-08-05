@@ -5,7 +5,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter
 import java.util.concurrent.ThreadLocalRandom
 import java.util.concurrent.TimeUnit
 
-val pets = arrayOf("EggDog`:dog:`", "EggCat`:cat:`", "EggChicken`:chicken:`")
+val pets = arrayOf("EggDog :dog:", "EggCat :cat:", "EggChicken :chicken:")
 var eventIsOn = false
 var crackchance = 0.0
 var pet_inventory: List<String> = arrayListOf()
@@ -18,9 +18,9 @@ fun petappear() {
 
         val petrandom = pets[ThreadLocalRandom.current().nextInt(0, 3)]
         embedMessage("A wild " + petrandom + " has appeared! ", UFO_GREEN)
-        if (petrandom == "EggDog`:dog:`") {
+        if (petrandom == "EggDog :dog:") {
             crackchance = 0.1
-        } else if (petrandom == "EggCat`:cat:`") {
+        } else if (petrandom == "EggCat :cat:") {
             crackchance = 0.05
         } else {
             crackchance = 0.02
