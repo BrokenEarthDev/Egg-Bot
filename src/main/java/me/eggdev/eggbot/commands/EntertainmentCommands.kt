@@ -331,11 +331,11 @@ class CaptureCommand : EggCommand() {
                 val amountstolen = ThreadLocalRandom.current().nextInt(1, 101)
                 currencySystem!!.removeEggs(sender.user, eggs)
                 if (capturechance >= amountstolen) {
-                    message.reply(embedMessage("Capture successful! `:white_check_mark:`", UFO_GREEN))
+                    message.reply(embedMessage("Capture successful! :white_check_mark:", UFO_GREEN))
                     pet_inventory.toMutableList().add(petrandom)
 
                 } else {
-                    message.reply(embedMessage("Capture unsuccessful :( `:negative_squared_cross_mark:`", RED_BAD))
+                    message.reply(embedMessage("Capture unsuccessful :(  :negative_squared_cross_mark:", RED_BAD))
                 }
             } else {
                 message.reply(embedMessage("You don' have $eggs`:egg:`s", RED_BAD))
