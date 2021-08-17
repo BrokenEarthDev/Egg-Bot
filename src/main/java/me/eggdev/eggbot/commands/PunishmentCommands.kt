@@ -11,6 +11,7 @@ import java.lang.Exception
 import java.lang.StringBuilder
 import java.util.concurrent.TimeUnit
 
+
 /**
  * This is the mute command. Mute command allows people to mute rule breakers for a
  * given duration, specified in seconds, minutes, hours, and days.
@@ -124,6 +125,7 @@ class BanCommand : EggCommand() {
                                 awaitReaction(msg) { mem, emo ->
                                     run {
                                         val future = executorService.schedule({
+                                            // todo another member is banned check
                                             unregisterAwaitReaction(msg)
                                             msg.delete().mapToResult().queue()
                                             message.reply(embedMessage(":clock6: **Time ran out!** You had 60 seconds to confirm the ban.", RED_BAD)).queue()

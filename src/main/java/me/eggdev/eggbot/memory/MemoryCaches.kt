@@ -177,6 +177,7 @@ open class MemoryCache<T>(
 }
 
 class CachedList<T> : MemoryCache<FIFOList<T>> {
+
     /**
      * Initializes a memory cache from a given set of specified properties
      * including its lifespan in millis, the refresh time for writing,

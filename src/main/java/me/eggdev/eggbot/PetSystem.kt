@@ -1,7 +1,5 @@
-import me.eggdev.eggbot.FLIRTATIOUS
-import me.eggdev.eggbot.embedMessage
-import me.eggdev.eggbot.executorService
-import me.eggdev.eggbot.jda
+package me.eggdev.eggbot
+
 import me.eggdev.eggbot.memory.FIFOList
 import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.entities.User
@@ -22,7 +20,7 @@ private val petProbability = 0.1
 // events
 val activeEvents = FIFOList<Long>(256) // up to 256 "events" active
 
-val inventories = FIFOList<Inventory>(256) // up to 256 retrieved inventories
+val inventories = FIFOList<Inventory>(256) // up to 256 retrieved me.eggdev.eggbot.getInventories
                                                    // todo- this may not work especially if
                                                    // todo there are more than 256 members
                                                    // todo until the cache system is capable

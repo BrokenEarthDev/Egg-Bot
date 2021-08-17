@@ -1,18 +1,13 @@
 package me.eggdev.eggbot
 
-import initPetsSystem
 import me.eggdev.eggbot.commands.*
-import me.eggdev.eggbot.memory.FIFOList
 import net.codebox.homoglyph.HomoglyphBuilder
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.utils.MemberCachePolicy
@@ -21,9 +16,6 @@ import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import kotlin.collections.ArrayList
-import java.util.concurrent.ThreadLocalRandom
-import java.util.concurrent.TimeUnit
-import kotlin.math.roundToInt
 
 val jda: JDA = JDABuilder.create(System.getenv("EGG_TOKEN"), EnumSet.allOf(GatewayIntent::class.java))
         .setMemberCachePolicy(MemberCachePolicy.ALL)

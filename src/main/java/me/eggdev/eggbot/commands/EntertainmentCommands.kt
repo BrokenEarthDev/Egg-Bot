@@ -317,30 +317,30 @@ class CaptureCommand : EggCommand() {
      * @return Whether the execution is considered to be 'successful'
      */
     override fun executeCommand(sender: Member, message: Message, args: List<String>): Boolean {
-        if (!eventIsOn) {
-            message.reply(embedMessage("No pet has appeared yet", RED_BAD)).queue()
-        } else {
-            val eggs = args[0].toIntOrNull()
-            if (eggs == null){
-                message.reply(embedMessage("I can't understand what you mean by ${args[0]}", RED_BAD)).queue()
-                return true
-            }
-
-            if (currencySystem!!.getEggs(sender.user) >= eggs) {
-                val capturechance = eggs * crackchance
-                val amountstolen = ThreadLocalRandom.current().nextInt(1, 101)
-                currencySystem!!.removeEggs(sender.user, eggs)
-                if (capturechance >= amountstolen) {
-                    message.reply(embedMessage("Capture successful! :white_check_mark:", UFO_GREEN))
-                    pet_inventory.toMutableList().add(petrandom)
-
-                } else {
-                    message.reply(embedMessage("Capture unsuccessful :(  :negative_squared_cross_mark:", RED_BAD))
-                }
-            } else {
-                message.reply(embedMessage("You don' have $eggs`:egg:`s", RED_BAD))
-            }
-        }
+//        if (!eventIsOn) {
+//            message.reply(embedMessage("No pet has appeared yet", RED_BAD)).queue()
+//        } else {
+//            val eggs = args[0].toIntOrNull()
+//            if (eggs == null){
+//                message.reply(embedMessage("I can't understand what you mean by ${args[0]}", RED_BAD)).queue()
+//                return true
+//            }
+//
+//            if (currencySystem!!.getEggs(sender.user) >= eggs) {
+//                val capturechance = eggs * crackchance
+//                val amountstolen = ThreadLocalRandom.current().nextInt(1, 101)
+//                currencySystem!!.removeEggs(sender.user, eggs)
+//                if (capturechance >= amountstolen) {
+//                    message.reply(embedMessage("Capture successful! :white_check_mark:", UFO_GREEN))
+//                    pet_inventory.toMutableList().add(petrandom)
+//
+//                } else {
+//                    message.reply(embedMessage("Capture unsuccessful :(  :negative_squared_cross_mark:", RED_BAD))
+//                }
+//            } else {
+//                message.reply(embedMessage("You don' have $eggs`:egg:`s", RED_BAD))
+//            }
+//        }
         return true
     }
 }
@@ -360,7 +360,7 @@ class InventoryCommand : EggCommand() {
      * @return Whether the execution is considered to be 'successful'
      */
     override fun executeCommand(sender: Member, message: Message, args: List<String>): Boolean {
-        message.reply(embedMessage(pet_inventory.joinToString(prefix = "[ ", separator = ", ", postfix = " ]"), UFO_GREEN))
+//        message.reply(embedMessage(pet_inventory.joinToString(prefix = "[ ", separator = ", ", postfix = " ]"), UFO_GREEN))
         return true
     }
 }
