@@ -1,6 +1,7 @@
 package me.eggdev.eggbot.memory
 
 import me.eggdev.eggbot.executorService
+import org.fusionyaml.library.`object`.YamlElement
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 
@@ -19,7 +20,7 @@ import java.util.concurrent.TimeUnit
 </T> */
 open class MemoryCache<T>(
     initialObj: T, lifespanMillis: Int, writeMillis: Int,
-    readMillis: Int, connector: StorageConnector<T, in Any>
+    readMillis: Int, connector: StorageConnector<T>
 ) {
     // The instance of the cache
     private var `object`: T?
@@ -33,7 +34,7 @@ open class MemoryCache<T>(
 
     // The connector to the storage, where memory is dumped
     // into storage
-    private val connector: StorageConnector<T, in Any>
+    private val connector: StorageConnector<T>
     private val lifespanMillis: Int
     private val writeMillis: Int
     private val readMillis: Int
@@ -56,9 +57,11 @@ open class MemoryCache<T>(
      * @param initialObj The initial value of the object
      * @param connector  The connector to the storage
      */
-    constructor(initialObj: T, connector: StorageConnector<T, in Any>) : this(initialObj, -1, -1, -1, connector) {}
+    constructor(initialObj: T, connector: StorageConnector<T>) : this(initialObj, -1, -1, -1, connector) {}
     /**
-     * Retrieves this object from the cache
+     * Retrieves this object from the cache. Force reading the instance will cause
+     * the threat to be paused. Therefore, only force read the object when
+     * necessary.
      *
      * @param forceWrite Whether the object should be written just before the
      * retrieval.
@@ -73,14 +76,18 @@ open class MemoryCache<T>(
     operator fun get(forceWrite: Boolean = false, forceRead: Boolean = false): T? {
         if (!alive) return null
         if (forceWrite) connector.write(`object`)
-        if (forceRead) `object` = connector.read()
+        if (forceRead) `object` = connector.read().get()
         return `object`
     }
 
     // Writes the cache
     private fun writeCache() {
-        if (!alive) return
-        if (write != null) write!!.cancel(false)
+        if (!alive) {
+            if (write != null) {
+                write?.cancel(false)
+            }
+            return
+        }
         // create update
         write = executorService
             .scheduleAtFixedRate({
@@ -91,14 +98,20 @@ open class MemoryCache<T>(
 
     // Reads the cache
     private fun readCache() {
-        if (!alive) return
-        if (read != null) read!!.cancel(false)
+        if (!alive) {
+            if (!read?.isCancelled!!) {
+                read?.cancel(false)
+            }
+            return
+        }
         read = executorService
             .scheduleAtFixedRate({
 
                 // read from target database
-                `object` = connector.read()
-                readCache()
+                // Thread should wait for at least half the next
+                // interval to ensure that other processes are
+                // performed first.
+                `object` = connector.read().get(readMillis / 2L, TimeUnit.MILLISECONDS)
             }, readMillis.toLong(), readMillis.toLong(), TimeUnit.MILLISECONDS)
     }
 
@@ -139,7 +152,7 @@ open class MemoryCache<T>(
          * @param connector The storage connector for T
          * @return A new memory cache object
          */
-        fun create(initial: T, connector: StorageConnector<T, in Any>): MemoryCache<T> {
+        fun create(initial: T, connector: StorageConnector<T>): MemoryCache<T> {
             return MemoryCache(initial, lifespan, write, read, connector)
         }
     }
@@ -196,7 +209,7 @@ class CachedList<T> : MemoryCache<FIFOList<T>> {
      */
     constructor(
         capacity: Int, lifespanMillis: Int, writeMillis: Int, readMillis: Int,
-        connector: StorageConnector<FIFOList<T>, in Any>
+        connector: StorageConnector<FIFOList<T>>
     ) : super(FIFOList<T>(capacity), lifespanMillis, writeMillis, readMillis, connector)
 
     /**
@@ -205,8 +218,9 @@ class CachedList<T> : MemoryCache<FIFOList<T>> {
      * @param capacity   The capacity of the cache
      * @param connector  The connector to the storage
      */
-    constructor(capacity: Int, connector: StorageConnector<FIFOList<T>, in Any>) : super(
+    constructor(capacity: Int, connector: StorageConnector<FIFOList<T>>) : super(
         FIFOList<T>(capacity),
         connector
     )
+
 }

@@ -105,16 +105,20 @@ data class Inventory(val owner: Long, val pets: ArrayList<Pet>)
 /**
  * Contains information about every pet
  *
- * @param name The name of the pet
+ * @param petName The name of the pet
  * @param emoji The emoji that can be used to represent the pet
  * @param rarity The probability (from 0 to 1) that this pet
  *               can be captured.
  */
-enum class Pet(name: String, emoji: String, rarity: Double){
+enum class Pet(petName: String, emoji: String, rarity: Double){
 
     // todo: AwwabienTG - implement rarities
 
     DOG("Dog", ":dog:", -1.0),
-    CAT("Cat", ":cat:", -1.0)
+    CAT("Cat", ":cat:", -1.0);
+
+    val petName = petName
+    val emoji = emoji
+    val rarity = rarity
 
 }
