@@ -112,6 +112,13 @@ class LevelingSystem(val levelCaches: ArrayList<LevelCache>) {
         println("Old = ${cache.levelUnit}, ${cache.level} || New = ${new}, $lvl")
         if (lvl > cache.level && award) {
             // new level
+
+            var newEggs = 0
+            for (i in cache.level until lvl) {
+                newEggs += div.rewardEggs
+            }
+            newEggs = ((ThreadLocalRandom.current().nextInt(5, 16) / 10.0) * newEggs.toDouble()).toInt()
+            currencySystem!!.addEggs(message.author, newEggs)
             if (div != cache.division) {
                 // new division has been reached
 
@@ -123,20 +130,14 @@ class LevelingSystem(val levelCaches: ArrayList<LevelCache>) {
                         .addField("Percentile",
                                 "N/A", true)
                         .addField("Level", lvl.toString(), true)
-                        .addField("Total eggs", "N/A", true) // todo
+                        .addField("Total eggs", currencySystem!!.getEggs(message.author).toString(), true) // todo
                         .build()
                 message.channel.sendMessage(embed).queue()
             } else {
                 // same division
-                var newEggs = 0
-                for (i in cache.level until lvl) {
-                    newEggs += div.rewardEggs
-                }
-                newEggs = ((ThreadLocalRandom.current().nextInt(5, 16) / 10.0) * newEggs.toDouble()).toInt()
                 message.channel.sendMessage("**Congratulations <@${message.member!!.id}>!** You have leveled up to level $lvl!\n" +
                         "+$newEggs eggs (level up)")
                         .queue()
-                // todo create a currency system with more eggs
             }
         }
 

@@ -1,13 +1,19 @@
 package me.eggdev.eggbot
 
+import me.eggdev.eggbot.memory.MemoryCache
+import me.eggdev.eggbot.memory.NullConnector
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.requests.RestAction
 import java.awt.Color
 import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 val GUILD_MUTED_ROLES: HashMap<Guild, Long> = HashMap()
+val GUILD_MUTED_ROLES_V2 = MemoryCache<HashMap<Guild, Long>>(HashMap(), 0, 10000,
+    0, NullConnector())
 
 /**
  * The punishment type (possible punishments for a user)
@@ -86,6 +92,10 @@ fun mute(user: User, punisher: User, reason: String, issued: Guild, end: Date) :
                     run {
                         issued.addRoleToMember(mem, r).queue {role ->
                             executorService.schedule({ unmute(mem)}, end.time - System.currentTimeMillis(), TimeUnit.MILLISECONDS)
+                            issued.textChannels.forEach { i -> run {
+                                i.manager.putPermissionOverride(r, null, arrayListOf(Permission.MESSAGE_HISTORY,
+                                    Permission.MESSAGE_READ, Permission.MESSAGE_WRITE)).mapToResult().queue()
+                            } }
                         }
                     }
                 }
@@ -156,17 +166,18 @@ fun kick(user: User, punisher: User, reason: String, issued: Guild) {
     val profile = PunishmentProfile(user, punisher, issued, PunishmentType.KICK, reason, Date(), null,
             false) // kick is a "one-time" punishment. Once executed, the punishment technically
                            // ends
-
-    // kick user
-    issued.kick(user.id, reason).mapToResult()
-            .queue {res ->
-                run {
-                    getProfile(user).punishmentProfiles.add(profile)
-//                    val embed = embed(":boot: You have been kicked",
-//                                "You have been kicked in `${issued.name}`", )
-                }
-            }
-
+    val embed = embed(":boot: You have been kicked", "You have been kicked in " +
+            "${issued.name} for violating one or more rules", "Staff member: ${punisher.asTag}",
+            RED_BAD, true, MessageEmbed.Field("Reason", reason, true))
+    user.openPrivateChannel().mapToResult().queue { p -> run {
+        if (p.isSuccess) {
+            p.get().sendMessage(embed).queue()
+        }
+        issued.kick(user.id).reason(reason).mapToResult().queue { r->
+            if (r.isSuccess)
+                getProfile(user).punishmentProfiles.add(profile)
+        }
+    }}
 }
 
 /**
@@ -188,4 +199,5 @@ private fun createMutedRole(target: Guild) : RestAction<Role> {
     return target.createRole()
             .setColor(Color.BLACK).setName("Muted")
             .setPermissions(Permission.UNKNOWN)
+            .setMentionable(false)
 }

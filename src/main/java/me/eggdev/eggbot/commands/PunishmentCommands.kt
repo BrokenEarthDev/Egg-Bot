@@ -52,9 +52,9 @@ class MuteCommand : EggCommand() {
                                     "minutes, hours, and days.", RED_BAD)).queue()
                         } else {
                             // check if sender > target
-                            if (!roleGreater(sender, member)) {
+                            if (!roleGreater(sender, member) && !sender.isOwner) {
                                 message.reply(embedMessage(":x: Can't mute user because the target user has a higher or " +
-                                        "equal role compared to the sender", RED_BAD))
+                                        "equal role compared to the sender", RED_BAD)).queue()
                                 return@queue
                             }
 
@@ -100,7 +100,7 @@ class BanCommand : EggCommand() {
                     run {
                         if (res.isFailure) {
                             message.channel.sendMessage(embedMessage(":person_shrugging: **Can't find user!** Please make sure that the user is " +
-                                    "correctly referenced and try again", RED_BAD))
+                                    "correctly referenced and try again", RED_BAD)).queue()
                             return@queue
                         }
                         val member = res.get()
@@ -253,7 +253,7 @@ class KickCommand : EggCommand() {
                         }
                     else reasonBuilder.append("Not provided.")
                     val reason = reasonBuilder.trim()
-
+                    kick(res.get().user, sender.user, reason as String, sender.guild)
                 }}
         return true
     }

@@ -14,6 +14,32 @@ Contains all database connector implementations.
 
  */
 
+class NullConnector<T>: StorageConnector<T>(File(""), "", Object::class.java) {
+    /**
+     * This method serializes an object of the type passed in to a [YamlElement]
+     *
+     * @param obj  The object
+     * @param type The type of the object passed in
+     * @return A [YamlElement], serialized from the object
+     */
+    override fun serialize(obj: T, type: Type?): YamlElement {
+        TODO("Not yet implemented")
+    }
+
+    /**
+     * Deserializes a [YamlElement]
+     *
+     * @param element The element
+     * @param type    The type of object to deserialize into
+     * @return An object of type [T], deserialized from
+     * [YamlElement]
+     */
+    override fun deserialize(element: YamlElement?, type: Type?): T {
+        TODO("Not yet implemented")
+    }
+
+}
+
 class InventoryConnector: StorageConnector<Inventory>(
     File("inventories.yml"),
     "inventories",

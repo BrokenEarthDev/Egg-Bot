@@ -172,7 +172,7 @@ class CrackCommand : EggCommand() {
         // finally crack them
         currencySystem!!.removeEggs(sender.user, number) // rem eggs
         val embed = EmbedBuilder()
-                .setTitle(":crack: Cracking $number :egg: ...")
+                .setTitle("Cracking $number :egg: ...")
                 .setDescription("There is a ${chickenProbability * 100}% chance to get a chicken")
                 .setImage(eggCrackLinks[ThreadLocalRandom.current().nextInt(0, eggCrackLinks.size)])
                 .setColor(CLEAR_CHILL)
@@ -181,8 +181,8 @@ class CrackCommand : EggCommand() {
         message.channel.sendMessage(embed).queue{ msg ->
             run {
                 // eval probability
-                val random = ThreadLocalRandom.current().nextDouble()
-                if (random <= chickenProbability) {
+                val random = ThreadLocalRandom.current().nextInt(0, 100)
+                if (random <= chickenProbability*100) {
                     // chicken :D
                     val m = embed(":partying_face: ${sender.user.name} has hatched a :chicken:",
                                                 "... at the expense of $number eggs",

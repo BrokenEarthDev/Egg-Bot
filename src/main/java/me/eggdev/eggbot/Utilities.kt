@@ -58,14 +58,16 @@ fun embedTitle(message: String, color: Color) : MessageEmbed {
  *
  * @param text The text
  */
-fun fromTag(text: String) : String {
-    return text.substring(3, text.length - 1)
+fun fromTag(text: String) : Long {
+    if (text.length <= 4) return 0
+    val l = text.substring(3, text.length - 1)
+    return l.toLongOrNull() ?: 0
 }
 
 private var durationsA = listOf("seconds", "minutes", "hours", "days")
 private var durationsB = listOf("sec", "min", "hr", "day")
 private var durationsC = listOf("s", "m", "h", "d")
-private var durations = listOf(durationsA, durationsB, durationsC)
+private var durations =  listOf(durationsA, durationsB, durationsC)
 private var units = listOf(Calendar.SECOND, Calendar.MINUTE, Calendar.HOUR, Calendar.DAY_OF_YEAR)
 
 /**

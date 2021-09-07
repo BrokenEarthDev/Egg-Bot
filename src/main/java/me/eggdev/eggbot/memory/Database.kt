@@ -108,3 +108,49 @@ abstract class StorageConnector<I>(
 // The thread that will be used during read/write
 // operations
 val IOThread = Executors.newSingleThreadExecutor()
+
+/**
+ * Utility class for finding certain [StorageConnectors] for
+ * certain objects
+ */
+object StorageConnectors {
+
+    /**
+     * Creates a storage connector for the class
+     */
+    fun <T> of(`class`: Class<T>) : StorageConnector<T> {
+
+        // todo: Search for an applicable storage connector
+        // todo: for the type
+        // todo: If none found, rely on FusionYAML's object
+        // todo: serializer/deserializer when processing IO
+
+        TODO("Not yet created")
+    }
+
+    /**
+     * Creates a storage connector for a cached list
+     */
+    fun <T> forCachedList() : StorageConnector<T> {
+
+        // todo: Create an arbitrary storage connector
+        // todo: for a cached list.
+        // todo: The storage connector should then "find"
+        // todo: the type of the list when the read/write
+        // todo: operation is called
+
+        TODO("Not yet created")
+    }
+
+    /**
+     * Creates a storage connector for a cached map
+     */
+    fun <T> forCachedMap() : StorageConnector<T> {
+
+
+        // todo: Same for #forCachedList()
+
+        TODO("Not yet created")
+    }
+
+}

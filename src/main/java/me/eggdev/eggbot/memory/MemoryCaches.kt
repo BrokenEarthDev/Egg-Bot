@@ -223,4 +223,10 @@ class CachedList<T> : MemoryCache<FIFOList<T>> {
         connector
     )
 
+    fun loadCache(key: String) : T? {
+        // attempts to load and push the newly loaded
+        // element into the list
+        return null
+    }
+
 }
